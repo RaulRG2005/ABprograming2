@@ -31,6 +31,7 @@ public:
             cout << "Cita con ID " << idCita << " no encontrada en el historial de " << nombre << ".\n";
         }
     }
+    
 
 
     void mostrarHistorial() const {
