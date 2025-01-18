@@ -1,88 +1,54 @@
-#include <iostream>
-#include <vector>
-#include <string>
+int main() {
+    const std::string FILENAME = "pacientes.txt";
+    std::vector<Paciente> pacientes = Paciente::cargarPacientes(FILENAME); // Cargar pacientes desde archivo
 
-using namespace std;
+    int opcion;
+    do {
+        std::cout << "\nGestión de Pacientes - Opciones disponibles:\n";
+        std::cout << "1. Registrar un nuevo paciente\n";
+        std::cout << "2. Listar todos los pacientes\n";
+        std::cout << "3. Salir\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
 
+        switch (opcion) {
+        case 1: {
+            int id;
+            std::string nombre, telefono;
+            std::cout << "Ingrese el ID del paciente: ";
+            std::cin >> id;
+            std::cin.ignore(); // Limpiar buffer
+            std::cout << "Ingrese el nombre del paciente: ";
+            std::getline(std::cin, nombre);
+            std::cout << "Ingrese el teléfono del paciente: ";
+            std::getline(std::cin, telefono);
 
-class Paciente {
-private:
-    int id;
-    string nombre;
-    vector<int> historialCitas; 
-
-public:
-    
-    Paciente(int _id, string _nombre) : id(_id), nombre(_nombre) {}
-
-   
-    void agregarCita(int idCita) {
-        historialCitas.push_back(idCita);
-        cout << "Cita con ID " << idCita << " registrada en el historial de " << nombre << ".\n";
-    }
-
-    void cancelarCita(int idCita) {
-        auto it = find(historialCitas.begin(), historialCitas.end(), idCita);
-        if (it != historialCitas.end()) {
-            historialCitas.erase(it);
-            cout << "Cita con ID " << idCita << " eliminada del historial de " << nombre << ".\n";
+            pacientes.emplace_back(id, nombre, telefono);
+            Paciente::guardarPacientes(pacientes, FILENAME); // Guardar después de registrar
+            std::cout << "Paciente registrado exitosamente.\n";
+            break;
         }
-        else {
-            cout << "Cita con ID " << idCita << " no encontrada en el historial de " << nombre << ".\n";
+        case 2: {
+            if (pacientes.empty()) {
+                std::cout << "No hay pacientes registrados.\n";
+            }
+            else {
+                std::cout << "Listado de pacientes:\n";
+                for (const auto& paciente : pacientes) {
+                    paciente.mostrarInfo();
+                }
+            }
+            break;
         }
-    }
-    
-
-
-    void mostrarHistorial() const {
-        cout << "Historial de citas para " << nombre << ":\n";
-        if (historialCitas.empty()) {
-            cout << "- No hay citas registradas.\n";
+        case 3:
+            std::cout << "Saliendo del programa. ¡Hasta luego!\n";
+            Paciente::guardarPacientes(pacientes, FILENAME); // Guardar antes de salir
+            break;
+        default:
+            std::cout << "Opción inválida. Inténtelo de nuevo.\n";
         }
-        else {
-            for (int idCita : historialCitas)
-                cout << "- Cita ID: " << idCita << "\n";
-        }
-    }
-
-    string getNombre() const {
-        return nombre;
-    }
-
-  
-    int getId() const {
-        return id;
-    }
-};
-
-
-int main() {rear un pac
-   
-    Paciente paciente1(1, "Juan Perez");
-
-
-    cout << "\nHistorial inicial:\n";
-    paciente1.mostrarHistorial();
-
-
-    cout << "\nAgregando citas al historial:\n";
-    paciente1.agregarCita(101);
-    paciente1.agregarCita(102);
-
- 
-    cout << "\nHistorial actualizado:\n";
-    paciente1.mostrarHistorial();
-
-    cout << "\nCancelando una cita:\n";
-    paciente1.cancelarCita(101);
-
-   
-    cout << "\nHistorial después de cancelar una cita:\n";
-    paciente1.mostrarHistorial();
-
- 
-    cout << "\nIntentando cancelar una cita inexistente:\n";
-    paciente1.cancelarCita(999);
+    } while (opcion != 3);
 
     return 0;
 }
+
