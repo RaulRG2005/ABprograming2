@@ -1,102 +1,76 @@
-#include <iostream>
-#include <vector>
+#ifndef CITA_H
+#define CITA_H
+
 #include <string>
-#include <algorithm>
+#include <iostream>
 
-using namespace std;
-
-
-class Paciente {
-public:
-    int id;
-    string nombre;
-    vector<int> historialCitas;
-
-    Paciente(int _id, string _nombre) : id(_id), nombre(_nombre) {}
-
-    void mostrarHistorial() {
-        cout << "Historial de citas para " << nombre << ":\n";
-        for (int cita : historialCitas)
-            cout << "- Cita ID: " << cita << "\n";
-    }
-};
-
-class Medico {
-public:
-    int id;
-    string nombre;
-    bool disponible;
-
-    Medico(int _id, string _nombre) : id(_id), nombre(_nombre), disponible(true) {}
-
-    void modificarDisponibilidad(bool estado) {
-        disponible = estado;
-    }
-};
-
-// Clase CitaMedica
-class CitaMedica {
+class Cita {
 private:
-    static vector<CitaMedica> citas; // Vector que almacena todas las citas
     int id;
-    int idPaciente;
-    int idMedico;
-    string fecha;
-    bool activa;
+    std::string fecha;
+    std::string descripcion;
 
 public:
-    CitaMedica(int _id, int _idPaciente, int _idMedico, string _fecha)
-        : id(_id), idPaciente(_idPaciente), idMedico(_idMedico), fecha(_fecha), activa(true) {}
+    // Constructor
+    Cita(int _id, const std::string& _fecha, const std::string& _descripcion)
+        : id(_id), fecha(_fecha), descripcion(_descripcion) {}
 
-    // Método para cancelar la cita
-    static bool cancelarCita(int idCita) {
-        auto it = find_if(citas.begin(), citas.end(), [idCita](CitaMedica& c) { return c.id == idCita; });
+    // Métodos para obtener y modificar datos
+    int getId() const { return id; }
+    std::string getFecha() const { return fecha; }
+    std::string getDescripcion() const { return descripcion; }
+    void setFecha(const std::string& nuevaFecha) { fecha = nuevaFecha; }
+    void setDescripcion(const std::string& nuevaDescripcion) { descripcion = nuevaDescripcion; }
 
-        if (it != citas.end() && it->activa) {
-            it->activa = false;
-            cout << "Cita con ID " << idCita << " ha sido cancelada.\n";
-            return true;
+    // Mostrar información de la cita
+    void mostrarInfo() const {
+        std::cout << "ID: " << id << ", Fecha: " << fecha << ", Descripción: " << descripcion << "\n";
+    }
+
+    // Métodos para guardar y cargar datos
+    static void guardarCitas(const std::vector<Cita>& citas, const std::string& filename) {
+        std::ofstream archivo(filename, std::ios::out | std::ios::trunc);
+        if (!archivo.is_open()) {
+            std::cerr << "Error al abrir el archivo para guardar citas.\n";
+            return;
         }
-        cout << "Cita no encontrada o ya estaba cancelada.\n";
-        return false;
-    }
 
-    // Método para agregar una nueva cita al sistema
-    static void agregarCita(CitaMedica cita) {
-        citas.push_back(cita);
-        cout << "Cita con ID " << cita.id << " creada exitosamente.\n";
-    }
-
-    // Mostrar todas las citas
-    static void mostrarCitas() {
-        cout << "Listado de citas:\n";
         for (const auto& cita : citas) {
-            cout << "- ID: " << cita.id << ", Paciente: " << cita.idPaciente
-                << ", Médico: " << cita.idMedico << ", Fecha: " << cita.fecha
-                << ", Activa: " << (cita.activa ? "Sí" : "No") << "\n";
+            archivo << cita.id << "|" << cita.fecha << "|" << cita.descripcion << "\n";
         }
+
+        archivo.close();
+        if (archivo.fail()) {
+            std::cerr << "Error al guardar los datos en el archivo.\n";
+        }
+    }
+
+    static std::vector<Cita> abrirFicheroCitas(const std::string& filename) {
+        std::vector<Cita> citas;
+        std::ifstream archivo(filename);
+        if (!archivo.is_open()) {
+            std::cerr << "Error al abrir el archivo para cargar citas.\n";
+            return citas;
+        }
+
+        std::string linea;
+        while (std::getline(archivo, linea)) {
+            std::stringstream ss(linea);
+            std::string idStr, fecha, descripcion;
+
+            std::getline(ss, idStr, '|');
+            std::getline(ss, fecha, '|');
+            std::getline(ss, descripcion, '|');
+
+            if (!idStr.empty() && !fecha.empty() && !descripcion.empty()) {
+                int id = std::stoi(idStr);
+                citas.emplace_back(id, fecha, descripcion);
+            }
+        }
+
+        archivo.close();
+        return citas;
     }
 };
 
-vector<CitaMedica> CitaMedica::citas;
-
-// Main para probar el programa
-int main() {
-    Paciente paciente1(1, "Juan Perez");
-    Medico medico1(1, "Dra. Ana Lopez");
-
-    CitaMedica::agregarCita(CitaMedica(1, 1, 1, "2024-12-01"));
-    CitaMedica::agregarCita(CitaMedica(2, 1, 1, "2024-12-15"));
-
-    cout << "\nCitas iniciales:\n";
-    CitaMedica::mostrarCitas();
-
-    cout << "\nCancelando la cita con ID 1:\n";
-    CitaMedica::cancelarCita(1);
-
-    cout << "\nCitas después de la cancelación:\n";
-    CitaMedica::mostrarCitas();
-
-    return 0;
-}
-
+#endif // CITA_H

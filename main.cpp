@@ -1,173 +1,90 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
-#include <algorithm>
+#include <sstream>
 
-using namespace std;
+#include "paciente.h"
+#include "cita.h"
+#include "medico.h"
 
-// Clase Paciente
-class Paciente {
-private:
-    int id;
-    string nombre;
-    string telefono;
-
-public:
-    Paciente(int _id, string _nombre, string _telefono)
-        : id(_id), nombre(_nombre), telefono(_telefono) {}
-
-    int getId() const { return id; }
-    string getNombre() const { return nombre; }
-    string getTelefono() const { return telefono; }
-
-    void setNombre(const string& nuevoNombre) { nombre = nuevoNombre; }
-    void setTelefono(const string& nuevoTelefono) { telefono = nuevoTelefono; }
-
-    void mostrarInfo() const {
-        cout << "ID: " << id << ", Nombre: " << nombre << ", Teléfono: " << telefono << "\n";
-    }
-};
-
-// Clase Médico
-class Medico {
-private:
-    int id;
-    string nombre;
-    string especialidad;
-
-public:
-    Medico(int _id, string _nombre, string _especialidad)
-        : id(_id), nombre(_nombre), especialidad(_especialidad) {}
-
-    int getId() const { return id; }
-    string getNombre() const { return nombre; }
-    string getEspecialidad() const { return especialidad; }
-
-    void setNombre(const string& nuevoNombre) { nombre = nuevoNombre; }
-    void setEspecialidad(const string& nuevaEspecialidad) { especialidad = nuevaEspecialidad; }
-
-    void mostrarInfo() const {
-        cout << "ID: " << id << ", Nombre: " << nombre << ", Especialidad: " << especialidad << "\n";
-    }
-};
-
-// Clase Cita
-class Cita {
-private:
-    int id;
-    int idPaciente;
-    int idMedico;
-    string fecha;
-
-public:
-    Cita(int _id, int _idPaciente, int _idMedico, string _fecha)
-        : id(_id), idPaciente(_idPaciente), idMedico(_idMedico), fecha(_fecha) {}
-
-    int getId() const { return id; }
-    int getIdPaciente() const { return idPaciente; }
-    int getIdMedico() const { return idMedico; }
-    string getFecha() const { return fecha; }
-
-    void mostrarInfo() const {
-        cout << "ID Cita: " << id << ", Paciente ID: " << idPaciente
-            << ", Médico ID: " << idMedico << ", Fecha: " << fecha << "\n";
-    }
-};
-
-// Función para mostrar el menú principal
-void mostrarMenu() {
-    cout << "\nOpciones disponibles:\n";
-    cout << "1. Registrar un paciente\n";
-    cout << "2. Registrar un médico\n";
-    cout << "3. Crear una cita\n";
-    cout << "4. Mostrar todos los pacientes\n";
-    cout << "5. Mostrar todos los médicos\n";
-    cout << "6. Mostrar todas las citas\n";
-    cout << "7. Eliminar un paciente\n";
-    cout << "8. Salir\n";
-    cout << "Seleccione una opción: ";
-}
-
-// Función principal
 int main() {
-    vector<Paciente> pacientes; // Lista de pacientes
-    vector<Medico> medicos;     // Lista de médicos
-    vector<Cita> citas;         // Lista de citas
-    int opcion;
+    const std::string FILENAME_PACIENTES = "pacientes.txt";
+    const std::string FILENAME_CITAS = "citas.txt";
+    const std::string FILENAME_MEDICOS = "medicos.txt";
 
+    std::vector<Paciente> pacientes = Paciente::abrirFicheroPacientes(FILENAME_PACIENTES);  // Cargar pacientes desde archivo al inicio
+    std::vector<Cita> citas = Cita::abrirFicheroCitas(FILENAME_CITAS);                      // Cargar citas desde archivo al inicio
+    std::vector<Medico> medicos = Medico::abrirFicheroMedicos(FILENAME_MEDICOS);            // Cargar médicos desde archivo al inicio
+
+    int opcion;
     do {
-        mostrarMenu();
-        cin >> opcion;
+        std::cout << "\nGestión de Pacientes - Opciones disponibles:\n";
+        std::cout << "1. Registrar un nuevo paciente\n";
+        std::cout << "2. Registrar una nueva cita\n";
+        std::cout << "3. Registrar un nuevo médico\n";
+        std::cout << "4. Listar todos los pacientes\n";
+        std::cout << "5. Listar todas las citas\n";
+        std::cout << "6. Listar todos los médicos\n";
+        std::cout << "7. Salir\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
 
         switch (opcion) {
         case 1: {
-            // Registrar un paciente
             int id;
-            string nombre, telefono;
-            cout << "Ingrese el ID del paciente: ";
-            cin >> id;
-            cout << "Ingrese el nombre del paciente: ";
-            cin.ignore();
-            getline(cin, nombre);
-            cout << "Ingrese el teléfono del paciente: ";
-            getline(cin, telefono);
+            std::string nombre, telefono;
+            std::cout << "Ingrese el ID del paciente: ";
+            std::cin >> id;
+            std::cin.ignore(); // Limpiar buffer
+            std::cout << "Ingrese el nombre del paciente: ";
+            std::getline(std::cin, nombre);
+            std::cout << "Ingrese el teléfono del paciente: ";
+            std::getline(std::cin, telefono);
+
             pacientes.emplace_back(id, nombre, telefono);
-            cout << "Paciente registrado exitosamente.\n";
+            Paciente::guardarPacientes(pacientes, FILENAME_PACIENTES); // Guardar después de registrar
+            std::cout << "Paciente registrado exitosamente.\n";
             break;
         }
         case 2: {
-            // Registrar un médico
             int id;
-            string nombre, especialidad;
-            cout << "Ingrese el ID del médico: ";
-            cin >> id;
-            cout << "Ingrese el nombre del médico: ";
-            cin.ignore();
-            getline(cin, nombre);
-            cout << "Ingrese la especialidad del médico: ";
-            getline(cin, especialidad);
-            medicos.emplace_back(id, nombre, especialidad);
-            cout << "Médico registrado exitosamente.\n";
+            std::string fecha, descripcion;
+            std::cout << "Ingrese el ID de la cita: ";
+            std::cin >> id;
+            std::cin.ignore(); // Limpiar buffer
+            std::cout << "Ingrese la fecha de la cita: ";
+            std::getline(std::cin, fecha);
+            std::cout << "Ingrese la descripción de la cita: ";
+            std::getline(std::cin, descripcion);
+
+            citas.emplace_back(id, fecha, descripcion);
+            Cita::guardarCitas(citas, FILENAME_CITAS); // Guardar después de registrar
+            std::cout << "Cita registrada exitosamente.\n";
             break;
         }
         case 3: {
-            // Crear una cita
-            int idCita, idPaciente, idMedico;
-            string fecha;
-            cout << "Ingrese el ID de la cita: ";
-            cin >> idCita;
-            cout << "Ingrese el ID del paciente: ";
-            cin >> idPaciente;
-            cout << "Ingrese el ID del médico: ";
-            cin >> idMedico;
-            cout << "Ingrese la fecha de la cita (YYYY-MM-DD): ";
-            cin.ignore();
-            getline(cin, fecha);
+            int id;
+            std::string nombre, especialidad;
+            std::cout << "Ingrese el ID del médico: ";
+            std::cin >> id;
+            std::cin.ignore(); // Limpiar buffer
+            std::cout << "Ingrese el nombre del médico: ";
+            std::getline(std::cin, nombre);
+            std::cout << "Ingrese la especialidad del médico: ";
+            std::getline(std::cin, especialidad);
 
-            // Verificar si el paciente y el médico existen
-            auto pacienteIt = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
-                return p.getId() == idPaciente;
-                });
-            auto medicoIt = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
-                return m.getId() == idMedico;
-                });
-
-            if (pacienteIt != pacientes.end() && medicoIt != medicos.end()) {
-                citas.emplace_back(idCita, idPaciente, idMedico, fecha);
-                cout << "Cita creada exitosamente.\n";
-            }
-            else {
-                cout << "Error: Paciente o médico no encontrado.\n";
-            }
+            medicos.emplace_back(id, nombre, especialidad);
+            Medico::guardarMedicos(medicos, FILENAME_MEDICOS); // Guardar después de registrar
+            std::cout << "Médico registrado exitosamente.\n";
             break;
         }
         case 4: {
-            // Mostrar todos los pacientes
             if (pacientes.empty()) {
-                cout << "No hay pacientes registrados.\n";
+                std::cout << "No hay pacientes registrados.\n";
             }
             else {
-                cout << "Listado de pacientes:\n";
+                std::cout << "Listado de pacientes:\n";
                 for (const auto& paciente : pacientes) {
                     paciente.mostrarInfo();
                 }
@@ -175,57 +92,38 @@ int main() {
             break;
         }
         case 5: {
-            // Mostrar todos los médicos
-            if (medicos.empty()) {
-                cout << "No hay médicos registrados.\n";
-            }
-            else {
-                cout << "Listado de médicos:\n";
-                for (const auto& medico : medicos) {
-                    medico.mostrarInfo();
-                }
-            }
-            break;
-        }
-        case 6: {
-            // Mostrar todas las citas
             if (citas.empty()) {
-                cout << "No hay citas registradas.\n";
+                std::cout << "No hay citas registradas.\n";
             }
             else {
-                cout << "Listado de citas:\n";
+                std::cout << "Listado de citas:\n";
                 for (const auto& cita : citas) {
                     cita.mostrarInfo();
                 }
             }
             break;
         }
-        case 7: {
-            // Eliminar un paciente
-            int idPaciente;
-            cout << "Ingrese el ID del paciente a eliminar: ";
-            cin >> idPaciente;
-
-            auto it = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
-                return p.getId() == idPaciente;
-                });
-
-            if (it != pacientes.end()) {
-                pacientes.erase(it);
-                cout << "Paciente eliminado exitosamente.\n";
+        case 6: {
+            if (medicos.empty()) {
+                std::cout << "No hay médicos registrados.\n";
             }
             else {
-                cout << "Paciente no encontrado.\n";
+                std::cout << "Listado de médicos:\n";
+                for (const auto& medico : medicos) {
+                    medico.mostrarInfo();
+                }
             }
             break;
         }
-        case 8:
-            cout << "Saliendo del programa. ¡Hasta luego!\n";
+        case 7:
+            std::cout << "Saliendo del programa. ¡Hasta luego!\n";
+            Paciente::guardarPacientes(pacientes, FILENAME_PACIENTES); // Guardar antes de salir
+            Cita::guardarCitas(citas, FILENAME_CITAS); // Guardar antes de salir
+            Medico::guardarMedicos(medicos, FILENAME_MEDICOS); // Guardar antes de salir
             break;
         default:
-            cout << "Opción inválida. Inténtelo de nuevo.\n";
+            std::cout << "Opción inválida. Inténtelo de nuevo.\n";
         }
-    } while (opcion != 8);
+    } while (opcion != 7);
 
-    return 0;
-}
+    return
