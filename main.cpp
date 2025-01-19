@@ -169,14 +169,17 @@ void mostrarMenu() {
     cout << "\nOpciones disponibles:\n";
     cout << "1. Registrar paciente\n";
     cout << "2. Baja de paciente\n";
-    cout << "3. Registrar medico\n";
-    cout << "4. Baja de medico\n";
-    cout << "5. Registrar cita\n";
-    cout << "6. Eliminar cita\n";
-    cout << "7. Mostrar paciente\n";
-    cout << "8. Mostrar medico\n";
-    cout << "9. Mostrar todas las citas\n";
-    cout << "10. Salir\n";
+    cout << "3. Modificar paciente\n";
+    cout << "4. Registrar medico\n";
+    cout << "5. Baja de medico\n";
+    cout << "6. Modificar medico\n";
+    cout << "7. Registrar cita\n";
+    cout << "8. Eliminar cita\n";
+    cout << "9. Modificar cita\n";
+    cout << "10. Mostrar paciente\n";
+    cout << "11. Mostrar medico\n";
+    cout << "12. Mostrar todas las citas\n";
+    cout << "13. Salir\n";
     cout << "Seleccione una opción: ";
 }
 
@@ -231,6 +234,33 @@ int main() {
             break;
         }
         case 3: {
+            int idPaciente;
+            cout << "Ingrese el ID del paciente a modificar: ";
+            cin >> idPaciente;
+            auto it = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
+                return p.getId() == idPaciente;
+                });
+            if (it != pacientes.end()) {
+                string nuevoNombre, nuevoTelefono, nuevoHistorial;
+                cout << "Ingrese el nuevo nombre del paciente: ";
+                cin.ignore();
+                getline(cin, nuevoNombre);
+                cout << "Ingrese el nuevo teléfono del paciente: ";
+                getline(cin, nuevoTelefono);
+                cout << "Ingrese el nuevo historial clínico del paciente: ";
+                getline(cin, nuevoHistorial);
+                it->setNombre(nuevoNombre);
+                it->setTelefono(nuevoTelefono);
+                it->setHistorialClinico(nuevoHistorial);
+                guardarDatos(pacientes, archivoPacientes);
+                cout << "Paciente modificado exitosamente.\n";
+            }
+            else {
+                cout << "Paciente no encontrado.\n";
+            }
+            break;
+        }
+        case 4: {
             int id;
             string nombre, especialidad;
             cout << "Ingrese el ID del médico: ";
@@ -245,7 +275,7 @@ int main() {
             cout << "Médico registrado exitosamente.\n";
             break;
         }
-        case 4: {
+        case 5: {
             int idMedico;
             cout << "Ingrese el ID del médico a eliminar: ";
             cin >> idMedico;
@@ -262,35 +292,48 @@ int main() {
             }
             break;
         }
-        case 5: {
-            int idCita, idPaciente, idMedico;
+        case 6: {
+            int idMedico;
+            cout << "Ingrese el ID del médico a modificar: ";
+            cin >> idMedico;
+            auto it = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
+                return m.getId() == idMedico;
+                });
+            if (it != medicos.end()) {
+                string nuevoNombre, nuevaEspecialidad;
+                cout << "Ingrese el nuevo nombre del médico: ";
+                cin.ignore();
+                getline(cin, nuevoNombre);
+                cout << "Ingrese la nueva especialidad del médico: ";
+                getline(cin, nuevaEspecialidad);
+                it->setNombre(nuevoNombre);
+                it->setEspecialidad(nuevaEspecialidad);
+                guardarDatos(medicos, archivoMedicos);
+                cout << "Médico modificado exitosamente.\n";
+            }
+            else {
+                cout << "Médico no encontrado.\n";
+            }
+            break;
+        }
+        case 7: {
+            int id;
+            int idPaciente, idMedico;
             string fecha;
             cout << "Ingrese el ID de la cita: ";
-            cin >> idCita;
+            cin >> id;
             cout << "Ingrese el ID del paciente: ";
             cin >> idPaciente;
             cout << "Ingrese el ID del médico: ";
             cin >> idMedico;
             cout << "Ingrese la fecha de la cita (YYYY-MM-DD): ";
-            cin.ignore();
-            getline(cin, fecha);
-            auto pacienteIt = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
-                return p.getId() == idPaciente;
-                });
-            auto medicoIt = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
-                return m.getId() == idMedico;
-                });
-            if (pacienteIt != pacientes.end() && medicoIt != medicos.end()) {
-                citas.emplace_back(idCita, idPaciente, idMedico, fecha);
-                guardarDatos(citas, archivoCitas);
-                cout << "Cita registrada exitosamente.\n";
-            }
-            else {
-                cout << "Error: Paciente o médico no encontrado.\n";
-            }
+            cin >> fecha;
+            citas.emplace_back(id, idPaciente, idMedico, fecha);
+            guardarDatos(citas, archivoCitas);
+            cout << "Cita registrada exitosamente.\n";
             break;
         }
-        case 6: {
+        case 8: {
             int idCita;
             cout << "Ingrese el ID de la cita a eliminar: ";
             cin >> idCita;
@@ -307,54 +350,53 @@ int main() {
             }
             break;
         }
-        case 7: {
-            if (pacientes.empty()) {
-                cout << "No hay pacientes registrados.\n";
-            }
-            else {
-                cout << "Listado de pacientes:\n";
-                for (const auto& paciente : pacientes) {
-                    paciente.mostrarInfo();
-                }
-            }
-            break;
-        }
-        case 8: {
-            if (medicos.empty()) {
-                cout << "No hay médicos registrados.\n";
-            }
-            else {
-                cout << "Listado de médicos:\n";
-                for (const auto& medico : medicos) {
-                    medico.mostrarInfo();
-                }
-            }
-            break;
-        }
         case 9: {
-            if (citas.empty()) {
-                cout << "No hay citas registradas.\n";
+            int idCita;
+            cout << "Ingrese el ID de la cita a modificar: ";
+            cin >> idCita;
+            auto it = find_if(citas.begin(), citas.end(), [idCita](const Cita& c) {
+                return c.getId() == idCita;
+                });
+            if (it != citas.end()) {
+                string nuevoEstado;
+                cout << "Ingrese el nuevo estado de la cita (Pendiente/Completada): ";
+                cin.ignore();
+                getline(cin, nuevoEstado);
+                it->setEstado(nuevoEstado);
+                guardarDatos(citas, archivoCitas);
+                cout << "Cita modificada exitosamente.\n";
             }
             else {
-                cout << "Listado de citas:\n";
-                for (const auto& cita : citas) {
-                    cita.mostrarInfo();
-                }
+                cout << "Cita no encontrada.\n";
             }
             break;
         }
         case 10: {
-            cout << "Saliendo del sistema...\n";
+            for (const auto& p : pacientes) {
+                p.mostrarInfo();
+            }
             break;
         }
-        default: {
-            cout << "Opción no válida. Por favor, intente de nuevo.\n";
+        case 11: {
+            for (const auto& m : medicos) {
+                m.mostrarInfo();
+            }
+            break;
         }
+        case 12: {
+            for (const auto& c : citas) {
+                c.mostrarInfo();
+            }
+            break;
         }
-    } while (opcion != 10);
+        case 13:
+            cout << "Saliendo...\n";
+            break;
+        default:
+            cout << "Opción inválida, por favor intente nuevamente.\n";
+            break;
+        }
+    } while (opcion != 13);
 
     return 0;
 }
-
-
-
