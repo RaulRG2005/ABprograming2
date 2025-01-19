@@ -172,7 +172,7 @@ void mostrarMenu() {
     cout << "3. Registrar médico\n";
     cout << "4. Baja de médico\n";
     cout << "5. Registrar cita\n";
-    cout << "6. Mostrar cita\n";
+    cout << "6. Eliminar cita\n";
     cout << "7. Mostrar paciente\n";
     cout << "8. Mostrar médico\n";
     cout << "9. Mostrar todas las citas\n";
@@ -290,14 +290,19 @@ int main() {
             break;
         }
         case 6: {
-            if (citas.empty()) {
-                cout << "No hay citas registradas.\n";
+            int idCita;
+            cout << "Ingrese el ID de la cita a eliminar: ";
+            cin >> idCita;
+            auto it = remove_if(citas.begin(), citas.end(), [idCita](const Cita& c) {
+                return c.getId() == idCita;
+                });
+            if (it != citas.end()) {
+                citas.erase(it, citas.end());
+                guardarDatos(citas, archivoCitas);
+                cout << "Cita eliminada exitosamente.\n";
             }
             else {
-                cout << "Listado de citas:\n";
-                for (const auto& cita : citas) {
-                    cita.mostrarInfo();
-                }
+                cout << "Cita no encontrada.\n";
             }
             break;
         }
@@ -337,14 +342,18 @@ int main() {
             }
             break;
         }
-        case 10:
-            cout << "Saliendo del programa. ¡Hasta luego!\n";
+        case 10: {
+            cout << "Saliendo del sistema...\n";
             break;
-        default:
-            cout << "Opción inválida. Inténtelo de nuevo.\n";
+        }
+        default: {
+            cout << "Opción no válida. Por favor, intente de nuevo.\n";
+        }
         }
     } while (opcion != 10);
 
     return 0;
 }
+
+
 
