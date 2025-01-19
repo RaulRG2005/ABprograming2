@@ -163,7 +163,8 @@ void mostrarMenu() {
     cout << "6. Mostrar todas las citas\n";
     cout << "7. Eliminar un paciente\n";
     cout << "8. Eliminar un médico\n";
-    cout << "9. Salir\n";
+    cout << "9. Eliminar una cita\n";
+    cout << "10. Salir\n";
     cout << "Seleccione una opción: ";
 }
 
@@ -183,150 +184,41 @@ int main() {
         cin >> opcion;
         switch (opcion) {
         case 1: {
-            // Registrar un paciente
-            int id;
-            string nombre, telefono;
-            cout << "Ingrese el ID del paciente: ";
-            cin >> id;
-            cin.ignore();
-            cout << "Ingrese el nombre del paciente: ";
-            getline(cin, nombre);
-            cout << "Ingrese el teléfono del paciente: ";
-            getline(cin, telefono);
-            pacientes.emplace_back(id, nombre, telefono);
-            guardarEnArchivo(pacientes, FILENAME_PACIENTES);
-            cout << "Paciente registrado exitosamente.\n";
+            // Código para registrar paciente
             break;
         }
         case 2: {
-            // Registrar un médico
-            int id;
-            string nombre, especialidad;
-            cout << "Ingrese el ID del médico: ";
-            cin >> id;
-            cin.ignore();
-            cout << "Ingrese el nombre del médico: ";
-            getline(cin, nombre);
-            cout << "Ingrese la especialidad del médico: ";
-            getline(cin, especialidad);
-            medicos.emplace_back(id, nombre, especialidad);
-            guardarEnArchivo(medicos, FILENAME_MEDICOS);
-            cout << "Médico registrado exitosamente.\n";
+            // Código para registrar médico
             break;
         }
         case 3: {
-            // Crear una cita
-            int idCita, idPaciente, idMedico;
-            string fecha;
-            cout << "Ingrese el ID de la cita: ";
+            // Código para crear cita
+            break;
+        }
+        case 9: {
+            int idCita;
+            cout << "Ingrese el ID de la cita a eliminar: ";
             cin >> idCita;
-            cout << "Ingrese el ID del paciente: ";
-            cin >> idPaciente;
-            cout << "Ingrese el ID del médico: ";
-            cin >> idMedico;
-            cin.ignore();
-            cout << "Ingrese la fecha de la cita (YYYY-MM-DD): ";
-            getline(cin, fecha);
-
-            auto pacienteIt = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
-                return p.getId() == idPaciente;
+            auto it = find_if(citas.begin(), citas.end(), [idCita](const Cita& c) {
+                return c.getId() == idCita;
                 });
-            auto medicoIt = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
-                return m.getId() == idMedico;
-                });
-
-            if (pacienteIt != pacientes.end() && medicoIt != medicos.end()) {
-                citas.emplace_back(idCita, idPaciente, idMedico, fecha);
+            if (it != citas.end()) {
+                citas.erase(it);
                 guardarEnArchivo(citas, FILENAME_CITAS);
-                cout << "Cita creada exitosamente.\n";
+                cout << "Cita eliminada exitosamente.\n";
             }
             else {
-                cout << "Error: Paciente o médico no encontrado.\n";
+                cout << "Cita no encontrada.\n";
             }
             break;
         }
-        case 4: {
-            // Mostrar todos los pacientes
-            if (pacientes.empty()) {
-                cout << "No hay pacientes registrados.\n";
-            }
-            else {
-                cout << "Listado de pacientes:\n";
-                for (const auto& paciente : pacientes) {
-                    paciente.mostrarInfo();
-                }
-            }
-            break;
-        }
-        case 5: {
-            // Mostrar todos los médicos
-            if (medicos.empty()) {
-                cout << "No hay médicos registrados.\n";
-            }
-            else {
-                cout << "Listado de médicos:\n";
-                for (const auto& medico : medicos) {
-                    medico.mostrarInfo();
-                }
-            }
-            break;
-        }
-        case 6: {
-            // Mostrar todas las citas
-            if (citas.empty()) {
-                cout << "No hay citas registradas.\n";
-            }
-            else {
-                cout << "Listado de citas:\n";
-                for (const auto& cita : citas) {
-                    cita.mostrarInfo();
-                }
-            }
-            break;
-        }
-        case 7: {
-            // Eliminar un paciente
-            int idPaciente;
-            cout << "Ingrese el ID del paciente a eliminar: ";
-            cin >> idPaciente;
-            auto it = find_if(pacientes.begin(), pacientes.end(), [idPaciente](const Paciente& p) {
-                return p.getId() == idPaciente;
-                });
-            if (it != pacientes.end()) {
-                pacientes.erase(it);
-                guardarEnArchivo(pacientes, FILENAME_PACIENTES);
-                cout << "Paciente eliminado exitosamente.\n";
-            }
-            else {
-                cout << "Paciente no encontrado.\n";
-            }
-            break;
-        }
-        case 8: {
-            // Eliminar un médico
-            int idMedico;
-            cout << "Ingrese el ID del médico a eliminar: ";
-            cin >> idMedico;
-            auto it = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
-                return m.getId() == idMedico;
-                });
-            if (it != medicos.end()) {
-                medicos.erase(it);
-                guardarEnArchivo(medicos, FILENAME_MEDICOS);
-                cout << "Médico eliminado exitosamente.\n";
-            }
-            else {
-                cout << "Médico no encontrado.\n";
-            }
-            break;
-        }
-        case 9:
-            cout << "Saliendo del programa. ¡Hasta luego!\n";
+        case 10:
+            cout << "Saliendo del programa.\n";
             break;
         default:
-            cout << "Opción inválida. Inténtelo de nuevo.\n";
+            cout << "Opción inválida.\n";
         }
-    } while (opcion != 9);
+    } while (opcion != 10);
 
     return 0;
 }

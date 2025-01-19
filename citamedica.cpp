@@ -3,6 +3,10 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 
 class Cita {
 private:
@@ -71,6 +75,22 @@ public:
         archivo.close();
         return citas;
     }
+
+    // Método para eliminar una cita por ID
+    static bool eliminarCita(std::vector<Cita>& citas, int id, const std::string& filename) {
+        auto it = std::remove_if(citas.begin(), citas.end(), [id](const Cita& cita) {
+            return cita.getId() == id;
+            });
+
+        if (it != citas.end()) {
+            citas.erase(it, citas.end());
+            guardarCitas(citas, filename);
+            return true;
+        }
+
+        return false;
+    }
 };
 
-#endif // CITA_H
+
+

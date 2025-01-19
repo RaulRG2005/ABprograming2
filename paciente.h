@@ -76,4 +76,24 @@ public:
     }
 };
 
-#endif // PACIENTE_H
+// Función para eliminar citas
+template <typename T>
+void eliminarCita(std::vector<T>& citas, const std::string& filename) {
+    int idCita;
+    std::cout << "Ingrese el ID de la cita a eliminar: ";
+    std::cin >> idCita;
+
+    auto it = std::find_if(citas.begin(), citas.end(), [idCita](const T& cita) {
+        return cita.getId() == idCita;
+        });
+
+    if (it != citas.end()) {
+        citas.erase(it);
+        T::guardarPacientes(citas, filename);
+        std::cout << "Cita eliminada exitosamente.\n";
+    }
+    else {
+        std::cout << "Cita no encontrada.\n";
+    }
+}
+
