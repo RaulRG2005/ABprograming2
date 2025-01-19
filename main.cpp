@@ -162,7 +162,8 @@ void mostrarMenu() {
     cout << "5. Mostrar todos los médicos\n";
     cout << "6. Mostrar todas las citas\n";
     cout << "7. Eliminar un paciente\n";
-    cout << "8. Salir\n";
+    cout << "8. Eliminar un médico\n";
+    cout << "9. Salir\n";
     cout << "Seleccione una opción: ";
 }
 
@@ -301,13 +302,31 @@ int main() {
             }
             break;
         }
-        case 8:
+        case 8: {
+            // Eliminar un médico
+            int idMedico;
+            cout << "Ingrese el ID del médico a eliminar: ";
+            cin >> idMedico;
+            auto it = find_if(medicos.begin(), medicos.end(), [idMedico](const Medico& m) {
+                return m.getId() == idMedico;
+                });
+            if (it != medicos.end()) {
+                medicos.erase(it);
+                guardarEnArchivo(medicos, FILENAME_MEDICOS);
+                cout << "Médico eliminado exitosamente.\n";
+            }
+            else {
+                cout << "Médico no encontrado.\n";
+            }
+            break;
+        }
+        case 9:
             cout << "Saliendo del programa. ¡Hasta luego!\n";
             break;
         default:
             cout << "Opción inválida. Inténtelo de nuevo.\n";
         }
-    } while (opcion != 8);
+    } while (opcion != 9);
 
     return 0;
 }
