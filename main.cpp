@@ -169,16 +169,17 @@ void mostrarMenu() {
     cout << "\nOpciones disponibles:\n";
     cout << "1. Registrar paciente\n";
     cout << "2. Baja de paciente\n";
-    cout << "3. Registrar médico\n";
-    cout << "4. Baja de médico\n";
+    cout << "3. Registrar medico\n";
+    cout << "4. Baja de medico\n";
     cout << "5. Registrar cita\n";
     cout << "6. Eliminar cita\n";
     cout << "7. Mostrar paciente\n";
-    cout << "8. Mostrar médico\n";
+    cout << "8. Mostrar medico\n";
     cout << "9. Mostrar todas las citas\n";
     cout << "10. Salir\n";
     cout << "Seleccione una opción: ";
 }
+
 
 // Función principal
 int main() {
