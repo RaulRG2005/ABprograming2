@@ -8,14 +8,15 @@ using namespace std;
 
 class Paciente {
 private:
-    string nombre, fechaIngreso;
     int id;
+    string nombre, fechaIngreso;
+    static vector<Paciente> listaPacientes;
 public:
-    void menuPacientes();
-    void altaPaciente();
-    void bajaPaciente();
-    void modificarDatos();
-    void buscarPaciente();
+    Paciente(int id, string nombre, string fechaIngreso);
+    static void menuPacientes();
+    static void altaPaciente();
+    static void bajaPaciente();
+    static void listarPacientes();
 };
 
 #endif

@@ -16,9 +16,6 @@ void mostrarMenuPrincipal() {
 
 int main() {
     int opcion;
-    Medico medico;
-    Paciente paciente;
-    CitaMedica cita;
 
     do {
         mostrarMenuPrincipal();
@@ -26,13 +23,13 @@ int main() {
 
         switch (opcion) {
         case 1:
-            medico.menuMedicos();
+            Medico::menuMedicos();
             break;
         case 2:
-            paciente.menuPacientes();
+            Paciente::menuPacientes();
             break;
         case 3:
-            cita.menuCitas();
+            CitaMedica::menuCitas();
             break;
         case 4:
             cout << "Saliendo del sistema...\n";
