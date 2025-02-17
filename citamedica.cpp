@@ -11,12 +11,12 @@ CitaMedica::CitaMedica(int id, int idPaciente, int idMedico, string fecha, strin
 void CitaMedica::menuCitas() {
     int opcion;
     do {
-        cout << "=== Gestión de Citas Médicas ===\n";
+        cout << "=== Gestion de Citas Medicas ===\n";
         cout << "1. Asignar Cita\n";
         cout << "2. Cancelar Cita\n";
         cout << "3. Listar Citas\n";
         cout << "4. Volver\n";
-        cout << "Seleccione una opción: ";
+        cout << "Seleccione una opcion: ";
         cin >> opcion;
 
         switch (opcion) {

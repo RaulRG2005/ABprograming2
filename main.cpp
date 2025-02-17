@@ -9,11 +9,11 @@ int main() {
     int opcion;
     do {
         cout << "=== Menu Principal ===\n";
-        cout << "1. Gestión de Pacientes\n";
-        cout << "2. Gestión de Médicos\n";
-        cout << "3. Gestión de Citas Médicas\n";
+        cout << "1. Gestion de Pacientes\n";
+        cout << "2. Gestion de Medicos\n";
+        cout << "3. Gesti0n de Citas Medicas\n";
         cout << "4. Salir\n";
-        cout << "Seleccione una opción: ";
+        cout << "Seleccione una opcion: ";
         cin >> opcion;
 
         switch (opcion) {

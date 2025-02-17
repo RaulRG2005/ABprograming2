@@ -10,16 +10,16 @@ Paciente::Paciente(int id, string nombre, string fechaIngreso) : id(id), nombre(
 void Paciente::menuPacientes() {
     int opcion;
     do {
-        cout << "=== Gestión de Pacientes ===\n";
+        cout << "=== Gestion de Pacientes ===\n";
         cout << "1. Alta de Paciente\n";
         cout << "2. Baja de Paciente\n";
         cout << "3. Modificar Datos\n";
         cout << "4. Buscar Paciente\n";
-        cout << "5. Registrar Historial Clínico\n";
+        cout << "5. Registrar Historial Clinico\n";
         cout << "6. Generar Reporte de Historial\n";
         cout << "7. Listar Pacientes\n";
         cout << "8. Volver\n";
-        cout << "Seleccione una opción: ";
+        cout << "Seleccione una opcion: ";
         cin >> opcion;
 
         switch (opcion) {
