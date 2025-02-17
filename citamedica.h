@@ -1,25 +1,22 @@
 #ifndef CITAMEDICA_H
 #define CITAMEDICA_H
 
-#include <iostream>
+#include <string>
 #include <vector>
-#include "medico.h"
-#include "paciente.h"
-
-using namespace std;
 
 class CitaMedica {
 private:
     int id;
     int idPaciente;
     int idMedico;
-    string fecha;
-    string hora;
-    string motivo;
-    static vector<CitaMedica> listaCitas;
+    std::string fecha;
+    std::string hora;
+    std::string motivo;
 
 public:
-    CitaMedica(int id, int idPaciente, int idMedico, string fecha, string hora, string motivo);
+    static std::vector<CitaMedica> listaCitas;  // Lista estática de citas
+
+    CitaMedica(int id, int idPaciente, int idMedico, const std::string& fecha, const std::string& hora, const std::string& motivo);
 
     static void menuCitas();
     static void asignarCita();
@@ -28,3 +25,5 @@ public:
 };
 
 #endif
+
+

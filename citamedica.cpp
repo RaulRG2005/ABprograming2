@@ -1,8 +1,13 @@
 #include "citamedica.h"
+#include <iostream>
+#include <string>  // Asegúrate de incluir esta línea para usar getline
 
-vector<CitaMedica> CitaMedica::listaCitas;  // Inicialización del vector estático
+using namespace std;
 
-CitaMedica::CitaMedica(int id, int idPaciente, int idMedico, string fecha, string hora, string motivo)
+// Inicialización de la lista estática
+std::vector<CitaMedica> CitaMedica::listaCitas;
+
+CitaMedica::CitaMedica(int id, int idPaciente, int idMedico, const std::string& fecha, const std::string& hora, const std::string& motivo)
     : id(id), idPaciente(idPaciente), idMedico(idMedico), fecha(fecha), hora(hora), motivo(motivo) {}
 
 void CitaMedica::menuCitas() {
@@ -72,8 +77,13 @@ void CitaMedica::listarCitas() {
         for (const auto& cita : listaCitas) {
             cout << "ID Cita: " << cita.id
                 << " | Paciente ID: " << cita.idPaciente
-
-
+                << " | Médico ID: " << cita.idMedico
+                << " | Fecha: " << cita.fecha
+                << " | Hora: " << cita.hora
+                << " | Motivo: " << cita.motivo << endl;
+        }
+    }
+}
 
 
 

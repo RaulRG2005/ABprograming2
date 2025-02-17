@@ -1,22 +1,28 @@
 #ifndef PACIENTE_H
 #define PACIENTE_H
 
-#include <iostream>
+#include <string>
 #include <vector>
-
-using namespace std;
 
 class Paciente {
 private:
     int id;
-    string nombre, fechaIngreso;
-    static vector<Paciente> listaPacientes;
+    std::string nombre;
+    std::string fechaIngreso;
+
 public:
-    Paciente(int id, string nombre, string fechaIngreso);
-    static void menuPacientes();
-    static void altaPaciente();
-    static void bajaPaciente();
-    static void listarPacientes();
+    // Lista estática de pacientes
+    static std::vector<Paciente> listaPacientes;
+
+    // Constructor
+    Paciente(int id, std::string nombre, std::string fechaIngreso);
+
+    // Métodos
+    void menuPacientes();
+    void altaPaciente();
+    void bajaPaciente();
+    void listarPacientes();
 };
 
 #endif
+

@@ -1,44 +1,50 @@
 #include <iostream>
 #include "medico.h"
-#include "paciente.h"
 #include "citamedica.h"
 
-using namespace std;
-
-void mostrarMenuPrincipal() {
-    cout << "=== Sistema de Gestión Hospitalaria ===\n";
-    cout << "1. Gestión de Médicos\n";
-    cout << "2. Gestión de Pacientes\n";
-    cout << "3. Gestión de Citas Médicas\n";
-    cout << "4. Salir\n";
-    cout << "Seleccione una opción: ";
-}
-
 int main() {
+    // Menú principal
     int opcion;
-
     do {
-        mostrarMenuPrincipal();
-        cin >> opcion;
+        std::cout << "=== Menú Principal ===\n";
+        std::cout << "1. Gestionar Médicos\n";
+        std::cout << "2. Gestionar Citas Médicas\n";
+        std::cout << "3. Salir\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
 
         switch (opcion) {
-        case 1:
-            Medico::menuMedicos();
+        case 1: {
+            int opcionMedico;
+            do {
+                std::cout << "\n=== Gestión de Médicos ===\n";
+                std::cout << "1. Listar Médicos\n";
+                std::cout << "2. Volver\n";
+                std::cout << "Seleccione una opción: ";
+                std::cin >> opcionMedico;
+
+                switch (opcionMedico) {
+                case 1:
+                    Medico::listarMedicos();
+                    break;
+                case 2:
+                    break;
+                default:
+                    std::cout << "Opción no válida. Intente de nuevo.\n";
+                }
+            } while (opcionMedico != 2);
             break;
+        }
         case 2:
-            Paciente::menuPacientes();
-            break;
-        case 3:
             CitaMedica::menuCitas();
             break;
-        case 4:
-            cout << "Saliendo del sistema...\n";
+        case 3:
+            std::cout << "Saliendo...\n";
             break;
         default:
-            cout << "Opción no válida. Intente de nuevo.\n";
+            std::cout << "Opción no válida. Intente de nuevo.\n";
         }
-    } while (opcion != 4);
+    } while (opcion != 3);
 
     return 0;
 }
-

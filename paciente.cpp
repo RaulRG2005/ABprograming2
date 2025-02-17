@@ -1,8 +1,14 @@
 #include "paciente.h"
+#include <iostream>
+#include <vector>
 
+using namespace std;
+
+// Inicializar lista de pacientes
 vector<Paciente> Paciente::listaPacientes;
 
-Paciente::Paciente(int id, string nombre, string fechaIngreso) : id(id), nombre(nombre), fechaIngreso(fechaIngreso) {}
+Paciente::Paciente(int id, string nombre, string fechaIngreso)
+    : id(id), nombre(nombre), fechaIngreso(fechaIngreso) {}
 
 void Paciente::menuPacientes() {
     int opcion;
@@ -44,6 +50,7 @@ void Paciente::bajaPaciente() {
     cout << "Ingrese ID del paciente a eliminar: ";
     cin >> id;
 
+    // Buscar y eliminar paciente por ID
     for (auto it = listaPacientes.begin(); it != listaPacientes.end(); ++it) {
         if (it->id == id) {
             listaPacientes.erase(it);
