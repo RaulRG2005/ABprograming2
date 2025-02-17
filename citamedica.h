@@ -3,20 +3,19 @@
 
 #include <string>
 #include <vector>
+using namespace std;
 
 class CitaMedica {
-private:
+public:
     int id;
     int idPaciente;
     int idMedico;
-    std::string fecha;
-    std::string hora;
-    std::string motivo;
+    string fecha;
+    string hora;
+    string motivo;
+    static vector<CitaMedica> listaCitas;
 
-public:
-    static std::vector<CitaMedica> listaCitas;  // Lista estática de citas
-
-    CitaMedica(int id, int idPaciente, int idMedico, const std::string& fecha, const std::string& hora, const std::string& motivo);
+    CitaMedica(int id, int idPaciente, int idMedico, string fecha, string hora, string motivo);
 
     static void menuCitas();
     static void asignarCita();
@@ -25,5 +24,6 @@ public:
 };
 
 #endif
+
 
 

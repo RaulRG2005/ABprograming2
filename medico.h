@@ -1,3 +1,4 @@
+// medico.h
 #ifndef MEDICO_H
 #define MEDICO_H
 
@@ -5,17 +6,18 @@
 #include <vector>
 
 class Medico {
-private:
-    int id;
+public:
     std::string nombre;
     std::string especialidad;
 
-public:
-    static std::vector<Medico> listaMedicos;  // Lista estática de médicos
+    // Métodos estáticos para la gestión de médicos
+    static void altaMedico();
+    static void bajaMedico();
+    static void listarMedicos();
+    static void menuMedicos();
 
-    Medico(int id, const std::string& nombre, const std::string& especialidad);
-    void mostrarInfo() const;
-    static void listarMedicos();  // Método estático para listar médicos
+private:
+    static std::vector<Medico> listaMedicos;
 };
 
 #endif

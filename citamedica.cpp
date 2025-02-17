@@ -1,13 +1,11 @@
 #include "citamedica.h"
 #include <iostream>
-#include <string>  // Asegúrate de incluir esta línea para usar getline
-
+#include <algorithm>
 using namespace std;
 
-// Inicialización de la lista estática
-std::vector<CitaMedica> CitaMedica::listaCitas;
+vector<CitaMedica> CitaMedica::listaCitas;
 
-CitaMedica::CitaMedica(int id, int idPaciente, int idMedico, const std::string& fecha, const std::string& hora, const std::string& motivo)
+CitaMedica::CitaMedica(int id, int idPaciente, int idMedico, string fecha, string hora, string motivo)
     : id(id), idPaciente(idPaciente), idMedico(idMedico), fecha(fecha), hora(hora), motivo(motivo) {}
 
 void CitaMedica::menuCitas() {
@@ -26,7 +24,7 @@ void CitaMedica::menuCitas() {
         case 2: cancelarCita(); break;
         case 3: listarCitas(); break;
         case 4: break;
-        default: cout << "Opción no válida. Intente de nuevo.\n";
+        default: cout << "Opción no válida.\n";
         }
     } while (opcion != 4);
 }
@@ -35,56 +33,56 @@ void CitaMedica::asignarCita() {
     int id, idPaciente, idMedico;
     string fecha, hora, motivo;
 
-    cout << "Ingrese ID de la cita: ";
+    cout << "Ingrese el ID de la cita: ";
     cin >> id;
-    cout << "Ingrese ID del paciente: ";
+    cout << "Ingrese el ID del paciente: ";
     cin >> idPaciente;
-    cout << "Ingrese ID del médico: ";
+    cout << "Ingrese el ID del médico: ";
     cin >> idMedico;
-    cout << "Ingrese fecha de la cita (DD/MM/AAAA): ";
+    cout << "Ingrese la fecha de la cita (formato: YYYY-MM-DD): ";
     cin >> fecha;
-    cout << "Ingrese hora de la cita (HH:MM): ";
+    cout << "Ingrese la hora de la cita (formato: HH:MM): ";
     cin >> hora;
 
-    cin.ignore();  // Solución para evitar problemas con getline
-    cout << "Ingrese motivo de la cita: ";
-    getline(cin, motivo);
+    cout << "Ingrese el motivo de la cita: ";
+    cin.ignore();  // Limpiar el buffer
+    cin >> motivo;  // Leer una palabra sin saltar espacios
 
+    // Crear la nueva cita y agregarla a la lista
     listaCitas.push_back(CitaMedica(id, idPaciente, idMedico, fecha, hora, motivo));
-    cout << "Cita registrada con éxito.\n";
+    cout << "Cita asignada con éxito.\n";
 }
 
 void CitaMedica::cancelarCita() {
     int id;
-    cout << "Ingrese ID de la cita a cancelar: ";
+    cout << "Ingrese el ID de la cita a cancelar: ";
     cin >> id;
 
-    for (auto it = listaCitas.begin(); it != listaCitas.end(); ++it) {
-        if (it->id == id) {
-            listaCitas.erase(it);
-            cout << "Cita cancelada correctamente.\n";
-            return;
-        }
+    // Buscar la cita por ID y eliminarla
+    auto it = find_if(listaCitas.begin(), listaCitas.end(), [id](const CitaMedica& cita) {
+        return cita.id == id;
+        });
+
+    if (it != listaCitas.end()) {
+        listaCitas.erase(it);
+        cout << "Cita cancelada con éxito.\n";
     }
-    cout << "Cita no encontrada.\n";
+    else {
+        cout << "Cita no encontrada.\n";
+    }
 }
 
 void CitaMedica::listarCitas() {
+    cout << "=== Listado de Citas ===\n";
     if (listaCitas.empty()) {
         cout << "No hay citas registradas.\n";
     }
     else {
-        for (const auto& cita : listaCitas) {
-            cout << "ID Cita: " << cita.id
-                << " | Paciente ID: " << cita.idPaciente
-                << " | Médico ID: " << cita.idMedico
-                << " | Fecha: " << cita.fecha
-                << " | Hora: " << cita.hora
-                << " | Motivo: " << cita.motivo << endl;
+        for (const CitaMedica& cita : listaCitas) {
+            cout << "ID: " << cita.id << ", Paciente ID: " << cita.idPaciente
+                << ", Médico ID: " << cita.idMedico << ", Fecha: " << cita.fecha
+                << ", Hora: " << cita.hora << ", Motivo: " << cita.motivo << "\n";
         }
     }
 }
-
-
-
 
