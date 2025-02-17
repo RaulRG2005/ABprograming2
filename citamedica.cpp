@@ -1,5 +1,6 @@
 #include "citamedica.h"
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 using namespace std;
 
@@ -46,11 +47,12 @@ void CitaMedica::asignarCita() {
 
     cout << "Ingrese el motivo de la cita: ";
     cin.ignore();  // Limpiar el buffer
-    cin >> motivo;  // Leer una palabra sin saltar espacios
+    getline(cin, motivo);  // Leer el motivo completo
 
     // Crear la nueva cita y agregarla a la lista
     listaCitas.push_back(CitaMedica(id, idPaciente, idMedico, fecha, hora, motivo));
     cout << "Cita asignada con éxito.\n";
+    guardarCitas();  // Guardar citas después de asignar
 }
 
 void CitaMedica::cancelarCita() {
@@ -66,6 +68,7 @@ void CitaMedica::cancelarCita() {
     if (it != listaCitas.end()) {
         listaCitas.erase(it);
         cout << "Cita cancelada con éxito.\n";
+        guardarCitas();  // Guardar citas después de cancelar
     }
     else {
         cout << "Cita no encontrada.\n";
@@ -83,6 +86,44 @@ void CitaMedica::listarCitas() {
                 << ", Médico ID: " << cita.idMedico << ", Fecha: " << cita.fecha
                 << ", Hora: " << cita.hora << ", Motivo: " << cita.motivo << "\n";
         }
+    }
+}
+
+void CitaMedica::guardarCitas() {
+    ofstream archivo("citas.txt");
+    if (archivo.is_open()) {
+        for (const auto& cita : listaCitas) {
+            archivo << cita.id << " "
+                << cita.idPaciente << " "
+                << cita.idMedico << " "
+                << cita.fecha << " "
+                << cita.hora << " "
+                << cita.motivo << "\n";
+        }
+        archivo.close();
+        cout << "Citas guardadas con éxito.\n";
+    }
+    else {
+        cout << "Error al abrir el archivo para guardar las citas.\n";
+    }
+}
+
+void CitaMedica::cargarCitas() {
+    ifstream archivo("citas.txt");
+    if (archivo.is_open()) {
+        int id, idPaciente, idMedico;
+        string fecha, hora, motivo;
+
+        while (archivo >> id >> idPaciente >> idMedico >> fecha >> hora) {
+            cin.ignore();  // Limpiar buffer antes de leer el motivo
+            getline(archivo, motivo);  // Leer el motivo completo
+            listaCitas.push_back(CitaMedica(id, idPaciente, idMedico, fecha, hora, motivo));
+        }
+        archivo.close();
+        cout << "Citas cargadas con éxito.\n";
+    }
+    else {
+        cout << "No se encontraron citas guardadas.\n";
     }
 }
 

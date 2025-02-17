@@ -1,23 +1,30 @@
-// medico.h
 #ifndef MEDICO_H
 #define MEDICO_H
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 class Medico {
 public:
-    std::string nombre;
-    std::string especialidad;
+    string nombre;
+    string especialidad;
 
-    // Métodos estáticos para la gestión de médicos
+    static vector<Medico> listaMedicos;
+
+    Medico() {}
+    Medico(string nombre, string especialidad) : nombre(nombre), especialidad(especialidad) {}
+
+    static void menuMedicos();
     static void altaMedico();
     static void bajaMedico();
     static void listarMedicos();
-    static void menuMedicos();
 
-private:
-    static std::vector<Medico> listaMedicos;
+    // Funciones para manejo de archivos
+    static void guardarMedicos();
+    static void cargarMedicos();
 };
 
 #endif

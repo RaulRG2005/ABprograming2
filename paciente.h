@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 class HistorialClinico {
@@ -35,8 +36,13 @@ public:
     static void listarPacientes();
     static void registrarHistorial(int idPaciente, const string& fecha, const string& enfermedad, const string& tratamiento);
     static void generarReporteHistorial(int idPaciente);
+
+    // Funciones para manejo de archivos
+    static void guardarPacientes();
+    static void cargarPacientes();
 };
 
 #endif
+
 
 
