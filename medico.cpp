@@ -190,13 +190,14 @@ void Medico::cargarMedicos() {
     ifstream archivo("medicos.txt");
     if (archivo.is_open()) {
         string idStr, nombre, especialidad;
-        while (archivo >> idStr) {
-            archivo.ignore(1, ',');  // Ignora la coma después del ID
-            archivo >> nombre;  // Lee el nombre
-            archivo.ignore(1, ',');  // Ignora la coma después del nombre
-            archivo >> especialidad;  // Lee la especialidad
-            listaMedicos.push_back(Medico(stoi(idStr), nombre, especialidad));
-            archivo.ignore(1, '\n'); // Ignora el salto de línea
+        while (getline(archivo, idStr, ',') && getline(archivo, nombre, ',') && getline(archivo, especialidad)) {
+            try {
+                int id = stoi(idStr);  
+                listaMedicos.push_back(Medico(id, nombre, especialidad));
+            }
+            catch (const std::invalid_argument& e) {
+                cout << "Error al convertir el ID a un entero: " << idStr << "\n";
+            }
         }
         archivo.close();
         cout << "Medicos cargados con exito.\n";
@@ -205,4 +206,3 @@ void Medico::cargarMedicos() {
         cout << "No se pudo abrir el archivo para cargar los medicos.\n";
     }
 }
-
