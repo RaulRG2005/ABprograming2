@@ -199,4 +199,3 @@ void Paciente::generarReporteHistorial(int idPaciente) {
         cout << "Paciente no encontrado.\n";
     }
 }
-

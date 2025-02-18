@@ -44,10 +44,8 @@ void CitaMedica::asignarCita() {
     cin >> fecha;
     cout << "Ingrese la hora de la cita (formato: HH:MM): ";
     cin >> hora;
-
-    cout << "Ingrese el motivo de la cita: ";
-    cin.ignore();  // Limpiar el buffer
-    getline(cin, motivo);  // Leer el motivo completo
+    cout << "Ingrese el motivo de la cita (sin espacios): ";
+    cin >> motivo;
 
     // Crear la nueva cita y agregarla a la lista
     listaCitas.push_back(CitaMedica(id, idPaciente, idMedico, fecha, hora, motivo));
@@ -113,10 +111,7 @@ void CitaMedica::cargarCitas() {
     if (archivo.is_open()) {
         int id, idPaciente, idMedico;
         string fecha, hora, motivo;
-
-        while (archivo >> id >> idPaciente >> idMedico >> fecha >> hora) {
-            cin.ignore();  // Limpiar buffer antes de leer el motivo
-            getline(archivo, motivo);  // Leer el motivo completo
+        while (archivo >> id >> idPaciente >> idMedico >> fecha >> hora >> motivo) {
             listaCitas.push_back(CitaMedica(id, idPaciente, idMedico, fecha, hora, motivo));
         }
         archivo.close();

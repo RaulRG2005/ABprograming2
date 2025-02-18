@@ -9,22 +9,27 @@ using namespace std;
 
 class Medico {
 public:
+    int id;
     string nombre;
     string especialidad;
 
     static vector<Medico> listaMedicos;
 
-    Medico() {}
-    Medico(string nombre, string especialidad) : nombre(nombre), especialidad(especialidad) {}
+    Medico(int id, string nombre, string especialidad);
 
+    // Menú y operaciones
     static void menuMedicos();
     static void altaMedico();
     static void bajaMedico();
+    static void modificarMedico();
+    static void buscarMedico();
     static void listarMedicos();
 
-    // Funciones para manejo de archivos
+    // Funciones de manejo de archivos
     static void guardarMedicos();
-    static void cargarMedicos();
+    static void cargarMedicos();  // Declarar la función de carga
 };
 
 #endif
+
+

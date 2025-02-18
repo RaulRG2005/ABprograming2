@@ -1,125 +1,175 @@
 #include "medico.h"
 #include <iostream>
-#include <vector>
 #include <fstream>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
-vector<Medico> Medico::listaMedicos;  // Vector estático para almacenar los médicos
+vector<Medico> Medico::listaMedicos;
 
-// Alta de un médico
-void Medico::altaMedico() {
-    string nombre, especialidad;
-    cout << "Ingrese nombre del medico: ";
-    cin >> nombre;
-    cin.ignore();
+Medico::Medico(int id, string nombre, string especialidad)
+    : id(id), nombre(nombre), especialidad(especialidad) {}
 
-    cout << "Ingrese especialidad del medico: ";
-    cin >> especialidad;
-    cin.ignore();
-
-    Medico nuevoMedico;
-    nuevoMedico.nombre = nombre;
-    nuevoMedico.especialidad = especialidad;
-    listaMedicos.push_back(nuevoMedico);
-
-    cout << "Medico registrado con exito.\n";
-    guardarMedicos();  // Guardar datos al archivo
-}
-
-// Baja de un médico
-void Medico::bajaMedico() {
-    string nombre;
-    cout << "Ingrese el nombre del medico a dar de baja: ";
-    cin >> nombre;
-    cin.ignore();
-
-    for (auto it = listaMedicos.begin(); it != listaMedicos.end(); ++it) {
-        if (it->nombre == nombre) {
-            listaMedicos.erase(it);
-            cout << "Medico " << nombre << " dado de baja exitosamente.\n";
-            guardarMedicos();  // Guardar datos al archivo
-            return;
+// Función para validar entrada numérica
+int leerEntero(const string& mensaje) {
+    int valor;
+    while (true) {
+        cout << mensaje;
+        cin >> valor;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Error: Ingrese un número válido. Intente de nuevo.\n";
         }
-    }
-    cout << "Medico no encontrado.\n";
-}
-
-// Listar médicos
-void Medico::listarMedicos() {
-    if (listaMedicos.empty()) {
-        cout << "No hay medicos registrados.\n";
-    }
-    else {
-        cout << "=== Listado de Medicos ===\n";
-        for (const auto& medico : listaMedicos) {
-            cout << "Nombre: " << medico.nombre << ", Especialidad: " << medico.especialidad << "\n";
+        else {
+            cin.ignore(1000, '\n');
+            return valor;
         }
     }
 }
 
-// Menú de opciones para gestionar médicos
+// Función para validar entrada de texto (sin números)
+string leerTexto(const string& mensaje) {
+    string texto;
+    bool valido;
+    do {
+        valido = true;
+        cout << mensaje;
+        cin >> texto;
+        for (char c : texto) {
+            if (isdigit(c)) {
+                cout << "Error: El texto no puede contener números. Intente de nuevo.\n";
+                valido = false;
+                break;
+            }
+        }
+    } while (!valido);
+    return texto;
+}
+
 void Medico::menuMedicos() {
     int opcion;
     do {
-        cout << "=== Gestion de Medicos ===\n";
+        cout << "\n=== Gestión de Médicos ===\n";
         cout << "1. Alta de Medico\n";
         cout << "2. Baja de Medico\n";
-        cout << "3. Listar Medicos\n";
-        cout << "4. Volver\n";
-        cout << "Seleccione una opcion: ";
+        cout << "3. Modificar Medico\n";
+        cout << "4. Buscar Medico\n";
+        cout << "5. Listar Medicos\n";
+        cout << "6. Guardar y Salir\n";
+        cout << "Seleccione una opción: ";
         cin >> opcion;
+        cin.ignore();
 
         switch (opcion) {
-        case 1:
-            altaMedico();
-            break;
-        case 2:
-            bajaMedico();
-            break;
-        case 3:
-            listarMedicos();
-            break;
-        case 4:
-            break;
-        default:
-            cout << "Opcion no valida.\n";
+        case 1: altaMedico(); break;
+        case 2: bajaMedico(); break;
+        case 3: modificarMedico(); break;
+        case 4: buscarMedico(); break;
+        case 5: listarMedicos(); break;
+        case 6: guardarMedicos(); break;
+        default: cout << "Opción no válida.\n";
         }
-    } while (opcion != 4);
+    } while (opcion != 6);
 }
 
-// Guardar médicos en archivo
+void Medico::altaMedico() {
+    int id = leerEntero("Ingrese el ID del médico: ");
+    string nombre = leerTexto("Ingrese el nombre del médico: ");
+    string especialidad = leerTexto("Ingrese la especialidad del médico: ");
+
+    listaMedicos.push_back(Medico(id, nombre, especialidad));
+    cout << "Médico registrado con éxito.\n";
+}
+
+void Medico::bajaMedico() {
+    int id = leerEntero("Ingrese el ID del médico a eliminar: ");
+    auto it = find_if(listaMedicos.begin(), listaMedicos.end(), [id](const Medico& m) {
+        return m.id == id;
+        });
+
+    if (it != listaMedicos.end()) {
+        listaMedicos.erase(it);
+        cout << "Médico eliminado con éxito.\n";
+    }
+    else {
+        cout << "Médico no encontrado.\n";
+    }
+}
+
+void Medico::modificarMedico() {
+    int id = leerEntero("Ingrese el ID del médico a modificar: ");
+    auto it = find_if(listaMedicos.begin(), listaMedicos.end(), [id](const Medico& m) {
+        return m.id == id;
+        });
+
+    if (it != listaMedicos.end()) {
+        cout << "Médico encontrado: " << it->nombre << ", Especialidad: " << it->especialidad << "\n";
+        it->nombre = leerTexto("Ingrese el nuevo nombre del médico: ");
+        it->especialidad = leerTexto("Ingrese la nueva especialidad del médico: ");
+        cout << "Médico modificado con éxito.\n";
+    }
+    else {
+        cout << "Médico no encontrado.\n";
+    }
+}
+
+void Medico::buscarMedico() {
+    int id = leerEntero("Ingrese el ID del médico a buscar: ");
+    auto it = find_if(listaMedicos.begin(), listaMedicos.end(), [id](const Medico& m) {
+        return m.id == id;
+        });
+
+    if (it != listaMedicos.end()) {
+        cout << "Médico encontrado: " << it->nombre << ", Especialidad: " << it->especialidad << "\n";
+    }
+    else {
+        cout << "Médico no encontrado.\n";
+    }
+}
+
+void Medico::listarMedicos() {
+    cout << "\n=== Lista de Médicos ===\n";
+    if (listaMedicos.empty()) {
+        cout << "No hay médicos registrados.\n";
+    }
+    else {
+        for (const Medico& m : listaMedicos) {
+            cout << "ID: " << m.id << ", Nombre: " << m.nombre << ", Especialidad: " << m.especialidad << "\n";
+        }
+    }
+}
+
 void Medico::guardarMedicos() {
     ofstream archivo("medicos.txt");
     if (archivo.is_open()) {
-        for (const auto& medico : listaMedicos) {
-            archivo << medico.nombre << "," << medico.especialidad << "\n";
+        for (const auto& m : listaMedicos) {
+            archivo << m.id << "," << m.nombre << "," << m.especialidad << "\n";
         }
         archivo.close();
+        cout << "Médicos guardados con éxito.\n";
     }
     else {
-        cout << "Error al abrir el archivo de medicos.\n";
+        cout << "Error al abrir el archivo para guardar los médicos.\n";
     }
 }
 
-// Cargar médicos desde archivo
+// Implementación de cargarMedicos
 void Medico::cargarMedicos() {
     ifstream archivo("medicos.txt");
     if (archivo.is_open()) {
-        listaMedicos.clear();
+        int id;
         string nombre, especialidad;
-        while (getline(archivo, nombre, ',') && getline(archivo, especialidad)) {
-            Medico medico;
-            medico.nombre = nombre;
-            medico.especialidad = especialidad;
-            listaMedicos.push_back(medico);
+        while (getline(archivo, nombre, ',') && archivo >> id) {
+            archivo.ignore(); // Ignorar la coma
+            getline(archivo, especialidad);
+            listaMedicos.push_back(Medico(id, nombre, especialidad));
         }
         archivo.close();
+        cout << "Médicos cargados con éxito.\n";
     }
     else {
-        cout << "No hay datos previos de medicos.\n";
+        cout << "No se pudo abrir el archivo para cargar los médicos.\n";
     }
 }
-
-
-
