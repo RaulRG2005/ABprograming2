@@ -2,11 +2,35 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <cctype>
+#include <regex>
+#include <sstream>
 using namespace std;
 
 vector<Paciente> Paciente::listaPacientes;
 
 Paciente::Paciente(int id, string nombre, string fechaIngreso) : id(id), nombre(nombre), fechaIngreso(fechaIngreso) {}
+
+bool esFechaValida(const string& fecha) {
+    regex formatoFecha("\\d{4}-\\d{2}-\\d{2}");
+    return regex_match(fecha, formatoFecha);
+}
+
+bool esNumero(const string& str) {
+    return all_of(str.begin(), str.end(), ::isdigit);
+}
+
+bool contieneSoloEspacios(const string& str) {
+    return str.find_first_not_of(" ") == string::npos;
+}
+
+bool contieneSoloLetras(const string& str) {
+    return all_of(str.begin(), str.end(), ::isalpha);
+}
+
+bool estaVacia(const string& str) {
+    return str.empty() || contieneSoloEspacios(str);
+}
 
 void Paciente::menuPacientes() {
     int opcion;
@@ -16,100 +40,95 @@ void Paciente::menuPacientes() {
         cout << "2. Baja de Paciente\n";
         cout << "3. Modificar Datos\n";
         cout << "4. Buscar Paciente\n";
-        cout << "5. Registrar Historial Clinico\n";
-        cout << "6. Generar Reporte de Historial\n";
-        cout << "7. Listar Pacientes\n";
-        cout << "8. Guardar y Salir\n";
+        cout << "5. Listar Pacientes\n";
+        cout << "6. Guardar y Salir\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Opcion no valida. Intente de nuevo.\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1: altaPaciente(); break;
         case 2: bajaPaciente(); break;
         case 3: modificarPaciente(); break;
         case 4: buscarPaciente(); break;
-        case 5: {
-            int idPaciente;
-            string fecha, enfermedad, tratamiento;
-            cout << "ID del paciente: ";
-            cin >> idPaciente;
-            cout << "Fecha del registro: ";
-            cin >> fecha;
-            cout << "Enfermedad diagnosticada: ";
-            cin >> enfermedad;
-            cout << "Tratamiento: ";
-            cin >> tratamiento;
-            registrarHistorial(idPaciente, fecha, enfermedad, tratamiento);
-            break;
+        case 5: listarPacientes(); break;
+        case 6: guardarPacientes(); break;
+        default: cout << "Opcion no valida.\n";
         }
-        case 6: {
-            int idPaciente;
-            cout << "ID del paciente para el reporte: ";
-            cin >> idPaciente;
-            generarReporteHistorial(idPaciente);
-            break;
-        }
-        case 7: listarPacientes(); break;
-        case 8: guardarPacientes(); break;
-        default: cout << "Opción no válida.\n";
-        }
-    } while (opcion != 8);
-}
-
-void Paciente::guardarPacientes() {
-    ofstream archivo("pacientes.txt");
-    for (const auto& p : listaPacientes) {
-        archivo << p.id << "," << p.nombre << "," << p.fechaIngreso << "\n";
-    }
-    archivo.close();
-    cout << "Datos guardados correctamente.\n";
-}
-
-void Paciente::cargarPacientes() {
-    ifstream archivo("pacientes.txt");
-    if (!archivo) return;
-
-    listaPacientes.clear();
-    int id;
-    string nombre, fechaIngreso;
-    while (archivo >> id) {
-        archivo.ignore();
-        getline(archivo, nombre, ',');
-        getline(archivo, fechaIngreso);
-        listaPacientes.push_back(Paciente(id, nombre, fechaIngreso));
-    }
-    archivo.close();
+    } while (opcion != 6);
 }
 
 void Paciente::altaPaciente() {
+    string idStr, nombre, fechaIngreso;
     int id;
-    string nombre, fechaIngreso;
-    cout << "Ingrese el ID del paciente: ";
-    cin >> id;
-    cout << "Ingrese el nombre del paciente: ";
-    cin.ignore();  // Limpiar el buffer
-    getline(cin, nombre);
-    cout << "Ingrese la fecha de ingreso (formato: YYYY-MM-DD): ";
-    cin >> fechaIngreso;
 
-    // Agregar al vector de pacientes
+    do {
+        cout << "Ingrese el ID del paciente: ";
+        cin >> idStr;
+        if (!esNumero(idStr)) {
+            cout << "Error: El ID solo debe contener numeros.\n";
+        }
+        else if (idStr.find(' ') != string::npos) {
+            cout << "Error: El ID no debe contener espacios.\n";
+        }
+    } while (!esNumero(idStr) || idStr.find(' ') != string::npos);
+    id = stoi(idStr);
+
+    do {
+        cout << "Ingrese el nombre del paciente: ";
+        cin >> nombre;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (estaVacia(nombre)) {
+            cout << "Error: El nombre no puede estar vacio.\n";
+        }
+        else if (!contieneSoloLetras(nombre)) {
+            cout << "Error: El nombre debe contener solo letras.\n";
+        }
+    } while (estaVacia(nombre) || !contieneSoloLetras(nombre));
+
+    do {
+        cout << "Ingrese la fecha de ingreso (YYYY-MM-DD): ";
+        cin >> fechaIngreso;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (estaVacia(fechaIngreso)) {
+            cout << "Error: La fecha no puede estar vacia.\n";
+        }
+        else if (!esFechaValida(fechaIngreso)) {
+            cout << "Error: Formato de fecha incorrecto.\n";
+        }
+    } while (estaVacia(fechaIngreso) || !esFechaValida(fechaIngreso));
+
     listaPacientes.push_back(Paciente(id, nombre, fechaIngreso));
-    cout << "Paciente agregado con éxito.\n";
+    cout << "Paciente agregado con exito.\n";
 }
 
 void Paciente::bajaPaciente() {
+    string idStr;
     int id;
-    cout << "Ingrese el ID del paciente a eliminar: ";
-    cin >> id;
 
-    // Buscar el paciente por ID y eliminarlo
-    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& paciente) {
-        return paciente.id == id;
-        });
+    do {
+        cout << "Ingrese el ID del paciente a eliminar: ";
+        cin >> idStr;
+        if (idStr.find(' ') != string::npos) {
+            cout << "Error: El ID no debe contener espacios.\n";
+        }
+    } while (!esNumero(idStr) || idStr.find(' ') != string::npos);
+    id = stoi(idStr);
 
+    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& p) { return p.id == id; });
     if (it != listaPacientes.end()) {
         listaPacientes.erase(it);
-        cout << "Paciente eliminado con éxito.\n";
+        cout << "Paciente eliminado con exito.\n";
     }
     else {
         cout << "Paciente no encontrado.\n";
@@ -117,22 +136,49 @@ void Paciente::bajaPaciente() {
 }
 
 void Paciente::modificarPaciente() {
+    string idStr, nuevoNombre, nuevaFecha;
     int id;
-    cout << "Ingrese el ID del paciente a modificar: ";
-    cin >> id;
 
-    // Buscar el paciente por ID
-    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& paciente) {
-        return paciente.id == id;
-        });
+    do {
+        cout << "Ingrese el ID del paciente a modificar: ";
+        cin >> idStr;
+        if (idStr.find(' ') != string::npos) {
+            cout << "Error: El ID no debe contener espacios.\n";
+        }
+    } while (!esNumero(idStr) || idStr.find(' ') != string::npos);
+    id = stoi(idStr);
 
+    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& p) { return p.id == id; });
     if (it != listaPacientes.end()) {
-        cout << "Paciente encontrado: " << it->nombre << ", " << it->fechaIngreso << "\n";
-        cout << "Ingrese el nuevo nombre: ";
-        cin.ignore();  // Limpiar el buffer
-        getline(cin, it->nombre);
-        cout << "Ingrese la nueva fecha de ingreso (formato: YYYY-MM-DD): ";
-        cin >> it->fechaIngreso;
+
+        do {
+            cout << "Ingrese el nuevo nombre del paciente: ";
+            cin >> nuevoNombre;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (estaVacia(nuevoNombre)) {
+                cout << "Error: El nombre no puede estar vacío.\n";
+            }
+            else if (!contieneSoloLetras(nuevoNombre)) {
+                cout << "Error: El nombre debe contener solo letras.\n";
+            }
+        } while (estaVacia(nuevoNombre) || !contieneSoloLetras(nuevoNombre));
+
+        do {
+            cout << "Ingrese la nueva fecha de ingreso (YYYY-MM-DD): ";
+            cin >> nuevaFecha;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (estaVacia(nuevaFecha)) {
+                cout << "Error: La fecha no puede estar vacía.\n";
+            }
+            else if (!esFechaValida(nuevaFecha)) {
+                cout << "Error: Formato de fecha incorrecto.\n";
+            }
+        } while (estaVacia(nuevaFecha) || !esFechaValida(nuevaFecha));
+
+        it->nombre = nuevoNombre;
+        it->fechaIngreso = nuevaFecha;
         cout << "Paciente modificado con éxito.\n";
     }
     else {
@@ -141,17 +187,21 @@ void Paciente::modificarPaciente() {
 }
 
 void Paciente::buscarPaciente() {
+    string idStr;
     int id;
-    cout << "Ingrese el ID del paciente a buscar: ";
-    cin >> id;
 
-    // Buscar el paciente por ID
-    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& paciente) {
-        return paciente.id == id;
-        });
+    do {
+        cout << "Ingrese el ID del paciente a buscar: ";
+        cin >> idStr;
+        if (idStr.find(' ') != string::npos) {
+            cout << "Error: El ID no debe contener espacios.\n";
+        }
+    } while (!esNumero(idStr) || idStr.find(' ') != string::npos);
+    id = stoi(idStr);
 
+    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [id](const Paciente& p) { return p.id == id; });
     if (it != listaPacientes.end()) {
-        cout << "Paciente encontrado: " << it->nombre << ", " << it->fechaIngreso << "\n";
+        cout << "Paciente encontrado: ID: " << it->id << ", Nombre: " << it->nombre << ", Fecha de Ingreso: " << it->fechaIngreso << "\n";
     }
     else {
         cout << "Paciente no encontrado.\n";
@@ -159,43 +209,45 @@ void Paciente::buscarPaciente() {
 }
 
 void Paciente::listarPacientes() {
-    cout << "=== Listado de Pacientes ===\n";
     if (listaPacientes.empty()) {
         cout << "No hay pacientes registrados.\n";
+        return;
     }
-    else {
-        for (const Paciente& p : listaPacientes) {
-            cout << "ID: " << p.id << ", Nombre: " << p.nombre << ", Fecha de Ingreso: " << p.fechaIngreso << "\n";
-        }
-    }
-}
-
-void Paciente::registrarHistorial(int idPaciente, const string& fecha, const string& enfermedad, const string& tratamiento) {
-    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [idPaciente](const Paciente& paciente) {
-        return paciente.id == idPaciente;
-        });
-
-    if (it != listaPacientes.end()) {
-        it->historialClinico.push_back(HistorialClinico(fecha, enfermedad, tratamiento));
-        cout << "Historial registrado con éxito.\n";
-    }
-    else {
-        cout << "Paciente no encontrado.\n";
+    cout << "Lista de Pacientes:\n";
+    for (const auto& paciente : listaPacientes) {
+        cout << "ID: " << paciente.id << ", Nombre: " << paciente.nombre << ", Fecha de Ingreso: " << paciente.fechaIngreso << "\n";
     }
 }
 
-void Paciente::generarReporteHistorial(int idPaciente) {
-    auto it = find_if(listaPacientes.begin(), listaPacientes.end(), [idPaciente](const Paciente& paciente) {
-        return paciente.id == idPaciente;
-        });
+void Paciente::guardarPacientes() {
+    ofstream file("pacientes.txt");  
+    if (!file) {
+        cout << "Error al guardar los pacientes.\n";
+        return;
+    }
+    for (const auto& paciente : listaPacientes) {
+        file << paciente.id << "," << paciente.nombre << "," << paciente.fechaIngreso << "\n";
+    }
+    file.close();
+    cout << "Pacientes guardados exitosamente.\n";
+}
 
-    if (it != listaPacientes.end()) {
-        cout << "=== Reporte de Historial Clínico ===\n";
-        for (const HistorialClinico& h : it->historialClinico) {
-            cout << "Fecha: " << h.fecha << ", Enfermedad: " << h.enfermedad << ", Tratamiento: " << h.tratamiento << "\n";
-        }
+void Paciente::cargarPacientes() {
+    ifstream file("pacientes.txt");  
+    if (!file) {
+        cout << "No hay pacientes registrados previamente.\n";
+        return;
     }
-    else {
-        cout << "Paciente no encontrado.\n";
+    listaPacientes.clear();
+    string linea;
+    while (getline(file, linea)) {  
+        stringstream ss(linea);
+        string idStr, nombre, fechaIngreso;
+        getline(ss, idStr, ',');  
+        getline(ss, nombre, ',');  
+        getline(ss, fechaIngreso); 
+        listaPacientes.push_back(Paciente(stoi(idStr), nombre, fechaIngreso));
     }
+    file.close();
+    cout << "Pacientes cargados exitosamente.\n";
 }

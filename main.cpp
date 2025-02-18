@@ -1,15 +1,15 @@
 #include <iostream>
 #include "paciente.h"
 #include "medico.h"
-#include "citamedica.h"  // Incluye el encabezado de CitaMedica
+#include "citamedica.h"  
 
 using namespace std;
 
 int main() {
-    // Cargar los datos de pacientes, médicos y citas al iniciar el programa
+    
     Paciente::cargarPacientes();
     Medico::cargarMedicos();
-    CitaMedica::cargarCitas();  // Cargar las citas médicas
+    CitaMedica::cargarCitas();  
 
     int opcion;
     do {
@@ -23,19 +23,19 @@ int main() {
 
         switch (opcion) {
         case 1:
-            Paciente::menuPacientes();  // Menú de gestión de pacientes
+            Paciente::menuPacientes();  
             break;
         case 2:
-            Medico::menuMedicos();  // Menú de gestión de médicos
+            Medico::menuMedicos();  
             break;
         case 3:
-            CitaMedica::menuCitas();  // Menú de gestión de citas médicas
+            CitaMedica::menuCitas();  
             break;
         case 4:
-            // Guardar los datos antes de salir
+            
             Paciente::guardarPacientes();
             Medico::guardarMedicos();
-            CitaMedica::guardarCitas();  // Guardar las citas médicas
+            CitaMedica::guardarCitas();  
             cout << "Saliendo del sistema...\n";
             break;
         default:

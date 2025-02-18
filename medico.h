@@ -17,7 +17,7 @@ public:
 
     Medico(int id, string nombre, string especialidad);
 
-    // Menú y operaciones
+    
     static void menuMedicos();
     static void altaMedico();
     static void bajaMedico();
@@ -25,9 +25,9 @@ public:
     static void buscarMedico();
     static void listarMedicos();
 
-    // Funciones de manejo de archivos
+    
     static void guardarMedicos();
-    static void cargarMedicos();  // Declarar la función de carga
+    static void cargarMedicos();  
 };
 
 #endif

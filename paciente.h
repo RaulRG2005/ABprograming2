@@ -5,6 +5,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <cctype>
+#include <regex>
 using namespace std;
 
 class HistorialClinico {
@@ -22,7 +25,7 @@ public:
     int id;
     string nombre;
     string fechaIngreso;
-    vector<HistorialClinico> historialClinico;  // Historial médico del paciente
+    vector<HistorialClinico> historialClinico; 
 
     static vector<Paciente> listaPacientes;
 
@@ -37,12 +40,16 @@ public:
     static void registrarHistorial(int idPaciente, const string& fecha, const string& enfermedad, const string& tratamiento);
     static void generarReporteHistorial(int idPaciente);
 
-    // Funciones para manejo de archivos
+    
+    static bool esNumero(const string& str) {
+        return !str.empty() && all_of(str.begin(), str.end(), ::isdigit);
+    }
+
+    
     static void guardarPacientes();
     static void cargarPacientes();
 };
 
 #endif
-
 
 
